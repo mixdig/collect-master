@@ -304,11 +304,21 @@
       </div>
     </div>
 
-    <!-- AMOUNT & LOAN DETAILS -->
+    <!-- AMOUNT, LOAN & CUSTOMER DETAILS -->
     <div class="glass-surface rounded-3xl p-5 shadow-sm">
-      <h2 class="text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3.5">Collection Bill</h2>
+      <h2 class="text-xs font-extrabold text-slate-500 uppercase tracking-wider mb-3.5">Collection Bill Details</h2>
 
       <div class="space-y-3.5">
+        <!-- CUSTOMER NAME FIELD -->
+        <div>
+          <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Customer / Payer Name</label>
+          <div class="relative mt-1">
+            <input id="customerName" type="text" value="Amit Kumar" placeholder="e.g. Amit Kumar" 
+              class="w-full bg-white/70 border border-slate-200/80 rounded-2xl pl-10 pr-3.5 py-2.5 text-xs font-bold text-slate-900 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition shadow-xs" />
+            <i data-lucide="user" class="w-4 h-4 text-blue-600 absolute left-3.5 top-3"></i>
+          </div>
+        </div>
+
         <div class="grid grid-cols-2 gap-2.5">
           <div>
             <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Amount (INR)</label>
@@ -350,7 +360,7 @@
           <strong>Tamper-Proof VPA Masking:</strong> Receiver UPI IDs are encrypted in-memory and omitted across client-facing endpoints to prevent DNS redirection and credential harvesting.
         </p>
         <p class="font-medium">
-          <strong>Mandatory Verification:</strong> Payers must inspect Company Legal Entity and Loan ID prior to 4/6-digit MPIN validation.
+          <strong>Customer & Reference Binding:</strong> Customer Name and Loan Agreement numbers are securely encoded directly into the UPI transaction note for audit compliance.
         </p>
       </div>
     </div>
@@ -438,11 +448,21 @@
         </div>
         <h3 id="cardCompany" class="text-xl font-black text-slate-900 tracking-tight leading-tight uppercase truncate">MOBILE AND MORE</h3>
       </div>
-      <p id="cardAgent" class="text-xs font-semibold text-slate-500 mb-4">Agent: Rahul Verma</p>
+      <p id="cardAgent" class="text-xs font-semibold text-slate-500 mb-2">Agent: Rahul Verma</p>
 
-      <!-- SCANNER BOX -->
+      <!-- CUSTOMER NAME PILL BADGE ON STANDEE -->
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100/90 border border-slate-200/80 text-slate-700 text-[11px] font-bold mb-3 shadow-xs">
+        <i data-lucide="user-check" class="w-3.5 h-3.5 text-blue-600"></i>
+        <span>Payer: <strong id="cardCustomerName" class="text-slate-900">Amit Kumar</strong></span>
+      </div>
+
+      <!-- CLICKABLE SCANNER BOX (TAP TO OPEN UPI APPS) -->
       <div class="inline-block p-1">
-        <div class="qr-glass-box inline-block relative">
+        <div 
+          onclick="launchUpiAppIntent('generic')" 
+          title="Tap Barcode to Open UPI Apps" 
+          class="qr-glass-box inline-block relative cursor-pointer active:scale-95 hover:shadow-blue-500/20 transition-all duration-200"
+        >
           <div class="scanner-line"></div>
 
           <div class="corner corner-tl"></div>
@@ -452,7 +472,7 @@
 
           <div class="absolute top-3 right-3 z-20 flex items-center gap-1 bg-white/90 border border-slate-200 rounded-full px-2 py-0.5 shadow-xs">
             <i data-lucide="scan" class="w-3 h-3 text-blue-600"></i>
-            <span class="text-[9px] font-extrabold text-blue-700">UPI SCAN</span>
+            <span class="text-[9px] font-extrabold text-blue-700">TAP TO PAY</span>
           </div>
 
           <div class="relative w-52 h-52 mx-auto flex items-center justify-center">
@@ -465,8 +485,8 @@
           </div>
 
           <div class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 bg-white/80 border border-slate-200/80 rounded-full text-[10px] font-extrabold text-slate-700 uppercase tracking-wider shadow-xs">
-            <i data-lucide="fingerprint" class="w-3.5 h-3.5 text-blue-600"></i>
-            <span>Scan With Any UPI App</span>
+            <i data-lucide="touchpad" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span>Tap QR or Scan to Pay</span>
           </div>
         </div>
       </div>
@@ -508,7 +528,7 @@
             <span class="text-[11px] font-black text-slate-700">BHIM</span>
           </div>
 
-          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-slate-200 shadow-xs">
+          <div class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white border border-slate-200 shadow-xs">
             <span class="text-[11px] font-black text-[#232F3E]">amazon<span class="text-[#FF9900]">pay</span></span>
           </div>
         </div>
@@ -596,6 +616,7 @@
         <div id="modalAmount" class="text-4xl font-black text-slate-900 my-1 tracking-tight">₹0.00</div>
         
         <div class="glass-surface rounded-2xl p-3 my-4 text-xs text-slate-600 space-y-1.5 text-left border border-white">
+          <div class="flex justify-between"><span>Payer Name:</span> <strong id="modalCustomerName" class="text-slate-900 font-extrabold">--</strong></div>
           <div class="flex justify-between"><span>Loan / Account ID:</span> <strong id="modalLoanId" class="text-slate-900 font-extrabold">--</strong></div>
           <div class="flex justify-between"><span>Settlement Status:</span> <strong class="text-emerald-700 font-bold flex items-center gap-1"><i data-lucide="badge-check" class="w-3.5 h-3.5"></i> Direct Merchant</strong></div>
         </div>
@@ -659,10 +680,16 @@
       </div>
 
       <h4 id="histModalCompany" class="text-sm font-black text-slate-900 uppercase truncate">Company</h4>
-      <p id="histModalLoan" class="text-[11px] font-semibold text-slate-500 mb-2">Loan ID: --</p>
+      <p id="histModalCustomer" class="text-[11px] font-bold text-slate-700">Payer: --</p>
+      <p id="histModalLoan" class="text-[10px] font-semibold text-slate-500 mb-2">Loan ID: --</p>
 
-      <div class="p-2 rounded-2xl bg-white border border-slate-200 inline-block my-1 shadow-inner">
+      <div 
+        id="histQrClickBox" 
+        title="Tap to Pay" 
+        class="p-2 rounded-2xl bg-white border border-slate-200 inline-block my-1 shadow-inner cursor-pointer active:scale-95 transition"
+      >
         <canvas id="histQrCanvas" class="w-44 h-44 rounded-xl mx-auto block"></canvas>
+        <span class="block text-[9px] font-bold text-blue-600 mt-1 uppercase tracking-wider">Tap QR to Pay via App</span>
       </div>
 
       <div class="my-2">
@@ -706,7 +733,7 @@
       renderHistory();
     });
 
-    // 1-MINUTE TIMER LOGIC FOR PAYER LINK
+    // 1-MINUTE TIMER FOR PAYER LINK
     function startPayerCountdown() {
       const banner = document.getElementById('payerCountdownBanner');
       const timerText = document.getElementById('countdownTimerText');
@@ -893,14 +920,17 @@
       document.getElementById('metricShares').textContent = shares;
     }
 
+    // STRICT NPCI URI GENERATOR WITH CUSTOMER NAME BINDING
     function generateQR(recordHistory = true) {
       const upi = document.getElementById('upiId').value.trim();
       const agent = document.getElementById('agentName').value.trim();
       const company = document.getElementById('companyName').value.trim();
       const amount = document.getElementById('amount').value.trim();
       const loanId = document.getElementById('loanId').value.trim();
+      const customer = document.getElementById('customerName').value.trim() || "Customer";
 
-      const note = encodeURIComponent(`Loan:${loanId} Ag:${agent}`);
+      // Bind Customer Name, Loan ID, and Agent Name into NPCI Transaction Note
+      const note = encodeURIComponent(`Cust:${customer} Loan:${loanId} Ag:${agent}`);
       const encCompany = encodeURIComponent(company);
       
       activeUpiUri = `upi://pay?pa=${upi}&pn=${encCompany}&am=${amount}&cu=INR&tn=${note}&mode=02&purpose=00`;
@@ -909,6 +939,7 @@
 
       document.getElementById('cardCompany').textContent = company || 'N/A';
       document.getElementById('cardAgent').textContent = `Agent: ${agent || 'Direct'}`;
+      document.getElementById('cardCustomerName').textContent = customer;
       document.getElementById('cardAmount').textContent = `₹${amount}`;
       document.getElementById('cardLoanId').textContent = loanId || 'N/A';
 
@@ -916,6 +947,7 @@
         saveHistoryItem({ 
           company, 
           agent, 
+          customer,
           amount, 
           loanId, 
           upi,
@@ -935,6 +967,7 @@
         if (p.get('loan')) document.getElementById('loanId').value = p.get('loan');
         if (p.get('cmp')) document.getElementById('companyName').value = p.get('cmp');
         if (p.get('ag')) document.getElementById('agentName').value = p.get('ag');
+        if (p.get('cust')) document.getElementById('customerName').value = p.get('cust');
         if (p.get('upi')) document.getElementById('upiId').value = p.get('upi');
 
         const pageOneEl = document.getElementById('pageOne');
@@ -964,9 +997,11 @@
       const agent = document.getElementById('agentName').value.trim();
       const amount = document.getElementById('amount').value.trim();
       const loanId = document.getElementById('loanId').value.trim();
+      const customer = document.getElementById('customerName').value.trim() || "Customer";
 
       document.getElementById('modalCompany').textContent = company || 'Merchant';
       document.getElementById('modalAgent').textContent = `Agent: ${agent || 'Direct'}`;
+      document.getElementById('modalCustomerName').textContent = customer;
       document.getElementById('modalAmount').textContent = `₹${amount}`;
       document.getElementById('modalLoanId').textContent = loanId || 'N/A';
 
@@ -997,13 +1032,12 @@
       }, 500);
     }
 
-    // =========================================================================
-    // CORE STAND CANVAS GENERATOR (USED BOTH FOR DOWNLOAD & IMAGE SHARING)
-    // =========================================================================
+    // CORE CANVAS GENERATOR WITH CUSTOMER NAME
     function generateStandeeBlob(callback) {
       try {
         const company = document.getElementById('cardCompany').textContent;
         const agent = document.getElementById('cardAgent').textContent;
+        const customer = document.getElementById('cardCustomerName').textContent;
         const amount = document.getElementById('cardAmount').textContent;
         const loanId = document.getElementById('cardLoanId').textContent;
         const qrSource = document.getElementById('qrCodeCanvas');
@@ -1011,14 +1045,14 @@
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = 720;
-        canvas.height = 1060;
+        canvas.height = 1080;
 
-        const bgGrad = ctx.createLinearGradient(0, 0, 720, 1060);
+        const bgGrad = ctx.createLinearGradient(0, 0, 720, 1080);
         bgGrad.addColorStop(0, '#0a192f');
         bgGrad.addColorStop(0.5, '#0f274a');
         bgGrad.addColorStop(1, '#050d1a');
         ctx.fillStyle = bgGrad;
-        ctx.fillRect(0, 0, 720, 1060);
+        ctx.fillRect(0, 0, 720, 1080);
 
         const orb = ctx.createRadialGradient(360, 200, 10, 360, 200, 400);
         orb.addColorStop(0, 'rgba(0, 113, 227, 0.45)');
@@ -1031,11 +1065,11 @@
         ctx.shadowBlur = 40;
         ctx.shadowOffsetY = 20;
 
-        const cardGrad = ctx.createLinearGradient(40, 40, 680, 1020);
+        const cardGrad = ctx.createLinearGradient(40, 40, 680, 1040);
         cardGrad.addColorStop(0, 'rgba(255, 255, 255, 0.96)');
         cardGrad.addColorStop(1, 'rgba(240, 246, 255, 0.90)');
         ctx.fillStyle = cardGrad;
-        drawRoundedRect(ctx, 40, 40, 640, 980, 36);
+        drawRoundedRect(ctx, 40, 40, 640, 1000, 36);
         ctx.restore();
 
         const topHolo = ctx.createLinearGradient(40, 40, 680, 40);
@@ -1057,70 +1091,83 @@
           if (logoLoadedImg) {
             ctx.save();
             ctx.fillStyle = '#ffffff';
-            drawRoundedRect(ctx, 110, 122, 44, 44, 12);
+            drawRoundedRect(ctx, 110, 120, 44, 44, 12);
             ctx.strokeStyle = '#cbd5e1';
             ctx.lineWidth = 1;
             ctx.stroke();
             
             ctx.beginPath();
-            ctx.arc(132, 144, 19, 0, Math.PI * 2);
+            ctx.arc(132, 142, 19, 0, Math.PI * 2);
             ctx.clip();
-            ctx.drawImage(logoLoadedImg, 113, 125, 38, 38);
+            ctx.drawImage(logoLoadedImg, 113, 123, 38, 38);
             ctx.restore();
 
             ctx.fillStyle = '#0f172a';
             ctx.font = '900 28px sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText(company, 168, 153);
+            ctx.fillText(company, 168, 150);
           } else {
             ctx.fillStyle = '#0f172a';
             ctx.font = '900 30px sans-serif';
             ctx.textAlign = 'center';
-            ctx.fillText(company, 360, 150);
+            ctx.fillText(company, 360, 146);
           }
 
           ctx.textAlign = 'center';
           ctx.fillStyle = '#64748b';
-          ctx.font = '600 16px sans-serif';
-          ctx.fillText(agent, 360, 185);
+          ctx.font = '600 15px sans-serif';
+          ctx.fillText(agent, 360, 178);
 
+          // Draw Customer Pill on Standee Canvas
+          ctx.fillStyle = '#f1f5f9';
+          drawRoundedRect(ctx, 230, 195, 260, 30, 15);
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          ctx.fillStyle = '#1e293b';
+          ctx.font = 'bold 13px sans-serif';
+          ctx.fillText(`Payer: ${customer}`, 360, 215);
+
+          // QR Box
           ctx.fillStyle = '#ffffff';
-          drawRoundedRect(ctx, 160, 210, 400, 400, 28);
+          drawRoundedRect(ctx, 160, 238, 400, 400, 28);
           ctx.strokeStyle = '#e2e8f0';
           ctx.lineWidth = 2;
           ctx.stroke();
 
+          // Corner Brackets
           ctx.strokeStyle = '#0071e3';
           ctx.lineWidth = 5;
           ctx.lineCap = 'round';
           const len = 34; const rad = 18;
 
           ctx.beginPath();
-          ctx.moveTo(175, 225 + len); ctx.lineTo(175, 225 + rad);
-          ctx.quadraticCurveTo(175, 225, 175 + rad, 225); ctx.lineTo(175 + len, 225);
+          ctx.moveTo(175, 253 + len); ctx.lineTo(175, 253 + rad);
+          ctx.quadraticCurveTo(175, 253, 175 + rad, 253); ctx.lineTo(175 + len, 253);
           ctx.stroke();
 
           ctx.beginPath();
-          ctx.moveTo(545 - len, 225); ctx.lineTo(545 - rad, 225);
-          ctx.quadraticCurveTo(545, 225, 545, 225 + rad); ctx.lineTo(545, 225 + len);
+          ctx.moveTo(545 - len, 253); ctx.lineTo(545 - rad, 253);
+          ctx.quadraticCurveTo(545, 253, 545, 253 + rad); ctx.lineTo(545, 253 + len);
           ctx.stroke();
 
           ctx.beginPath();
-          ctx.moveTo(175, 595 - len); ctx.lineTo(175, 595 - rad);
-          ctx.quadraticCurveTo(175, 595, 175 + rad, 595); ctx.lineTo(175 + len, 595);
+          ctx.moveTo(175, 623 - len); ctx.lineTo(175, 623 - rad);
+          ctx.quadraticCurveTo(175, 623, 175 + rad, 623); ctx.lineTo(175 + len, 623);
           ctx.stroke();
 
           ctx.beginPath();
-          ctx.moveTo(545 - len, 595); ctx.lineTo(545 - rad, 595);
-          ctx.quadraticCurveTo(545, 595, 545, 595 - rad); ctx.lineTo(545, 595 - len);
+          ctx.moveTo(545 - len, 623); ctx.lineTo(545 - rad, 623);
+          ctx.quadraticCurveTo(545, 623, 545, 623 - rad); ctx.lineTo(545, 623 - len);
           ctx.stroke();
 
-          ctx.drawImage(qrSource, 195, 245, 330, 330);
+          ctx.drawImage(qrSource, 195, 273, 330, 330);
 
           if (logoLoadedImg) {
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.arc(360, 410, 40, 0, Math.PI * 2);
+            ctx.arc(360, 438, 40, 0, Math.PI * 2);
             ctx.fill();
             ctx.strokeStyle = '#0071e3';
             ctx.lineWidth = 3.5;
@@ -1128,14 +1175,14 @@
 
             ctx.save();
             ctx.beginPath();
-            ctx.arc(360, 410, 36, 0, Math.PI * 2);
+            ctx.arc(360, 438, 36, 0, Math.PI * 2);
             ctx.clip();
-            ctx.drawImage(logoLoadedImg, 324, 374, 72, 72);
+            ctx.drawImage(logoLoadedImg, 324, 402, 72, 72);
             ctx.restore();
           } else {
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.arc(360, 410, 36, 0, Math.PI * 2);
+            ctx.arc(360, 438, 36, 0, Math.PI * 2);
             ctx.fill();
             ctx.strokeStyle = '#0071e3';
             ctx.lineWidth = 3;
@@ -1143,37 +1190,40 @@
 
             ctx.fillStyle = '#0071e3';
             ctx.font = 'bold 22px sans-serif';
-            ctx.fillText('✓', 360, 418);
+            ctx.fillText('✓', 360, 446);
           }
 
-          const amtGrad = ctx.createLinearGradient(210, 635, 510, 695);
+          // Amount Pill
+          const amtGrad = ctx.createLinearGradient(210, 655, 510, 715);
           amtGrad.addColorStop(0, '#0071e3');
           amtGrad.addColorStop(1, '#4338ca');
           ctx.fillStyle = amtGrad;
-          drawRoundedRect(ctx, 220, 635, 280, 58, 18);
+          drawRoundedRect(ctx, 220, 655, 280, 58, 18);
 
           ctx.fillStyle = '#ffffff';
           ctx.font = '900 30px sans-serif';
-          ctx.fillText(amount, 360, 675);
+          ctx.fillText(amount, 360, 695);
 
+          // Meta Info
           ctx.fillStyle = '#334155';
           ctx.font = 'bold 17px sans-serif';
-          ctx.fillText(`Loan / Reference ID: ${loanId}`, 360, 725);
+          ctx.fillText(`Loan / Reference ID: ${loanId}`, 360, 745);
 
           ctx.fillStyle = '#059669';
           ctx.font = 'bold 14px sans-serif';
-          ctx.fillText('Collect Master Secure Gateway Verified', 360, 755);
+          ctx.fillText('Collect Master Secure Gateway Verified', 360, 775);
 
+          // Divider
           ctx.strokeStyle = '#e2e8f0';
           ctx.lineWidth = 1.5;
           ctx.beginPath();
-          ctx.moveTo(100, 785);
-          ctx.lineTo(620, 785);
+          ctx.moveTo(100, 805);
+          ctx.lineTo(620, 805);
           ctx.stroke();
 
           ctx.fillStyle = '#64748b';
           ctx.font = 'bold 12px sans-serif';
-          ctx.fillText('SUPPORTED UPI PAYMENT APPS', 360, 815);
+          ctx.fillText('SUPPORTED UPI PAYMENT APPS', 360, 835);
 
           const badges = [
             { name: 'GPay', x: 75, bg: '#ffffff', color: '#1e293b', dot: '#4285F4' },
@@ -1185,20 +1235,20 @@
 
           badges.forEach(b => {
             ctx.fillStyle = b.bg;
-            drawRoundedRect(ctx, b.x, 835, 105, 38, 12);
+            drawRoundedRect(ctx, b.x, 855, 105, 38, 12);
             ctx.strokeStyle = '#cbd5e1';
             ctx.lineWidth = 1;
             ctx.stroke();
 
             ctx.fillStyle = b.dot;
             ctx.beginPath();
-            ctx.arc(b.x + 18, 854, 6, 0, Math.PI * 2);
+            ctx.arc(b.x + 18, 874, 6, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.fillStyle = b.color;
             ctx.font = 'bold 12px sans-serif';
             ctx.textAlign = 'left';
-            ctx.fillText(b.name, b.x + 30, 858);
+            ctx.fillText(b.name, b.x + 30, 878);
           });
 
           canvas.toBlob((blob) => {
@@ -1236,9 +1286,7 @@
       });
     }
 
-    // =========================================================================
-    // SHARE SMART LINK + LIVE QR STANDEE IMAGE TOGETHER (NATIVE SYSTEM SHARE)
-    // =========================================================================
+    // SHARE SMART LINK + IMAGE WITH CUSTOMER NAME
     async function shareSmartVariableLink(customItem = null) {
       recordShareMemory();
 
@@ -1246,6 +1294,7 @@
       const amount = customItem ? customItem.amount : document.getElementById('amount').value.trim();
       const loanId = customItem ? customItem.loanId : document.getElementById('loanId').value.trim();
       const agent = customItem ? customItem.agent : document.getElementById('agentName').value.trim();
+      const customer = customItem ? customItem.customer : document.getElementById('customerName').value.trim();
       const upi = customItem ? customItem.upi : document.getElementById('upiId').value.trim();
 
       const baseUrl = window.location.href.split('?')[0];
@@ -1256,20 +1305,19 @@
         loan: loanId,
         cmp: company,
         ag: agent,
+        cust: customer,
         upi: upi
       });
 
       const fullVariablePaymentUrl = `${baseUrl}?${queryParams.toString()}`;
-      const shareText = `COLLECT MASTER PAYMENT NOTICE\nCompany: ${company}\nDue Amount: ₹${amount}\nLoan ID: ${loanId}\nPay Instantly Online: ${fullVariablePaymentUrl}`;
+      const shareText = `COLLECT MASTER PAYMENT NOTICE\nCompany: ${company}\nPayer: ${customer}\nDue Amount: ₹${amount}\nLoan ID: ${loanId}\nPay Instantly Online: ${fullVariablePaymentUrl}`;
 
-      // Temporarily update share button state
       const shareBtn = document.getElementById('mainShareBtn');
       const originalHtml = shareBtn ? shareBtn.innerHTML : '';
       if (shareBtn && !customItem) {
         shareBtn.innerHTML = `<span class="animate-spin text-xs">⏳</span> Generating QR Image...`;
       }
 
-      // Generate HD Standee PNG file to share
       generateStandeeBlob(async (blob, lid) => {
         if (shareBtn && !customItem) shareBtn.innerHTML = originalHtml;
 
@@ -1279,15 +1327,11 @@
           url: fullVariablePaymentUrl
         };
 
-        let fileShared = false;
-
-        // Attach Image File if supported by Browser / WebShare API
         if (blob && navigator.canShare) {
           try {
             const qrFile = new File([blob], `CollectMaster_${lid || 'QR'}.png`, { type: 'image/png' });
             if (navigator.canShare({ files: [qrFile] })) {
               shareData.files = [qrFile];
-              fileShared = true;
             }
           } catch (e) {
             console.warn('File share check error:', e);
@@ -1298,10 +1342,7 @@
           try {
             await navigator.share(shareData);
           } catch (err) {
-            if (err.name !== 'AbortError') {
-              // Fallback to text copy if sharing failed
-              copyFallback(fullVariablePaymentUrl);
-            }
+            if (err.name !== 'AbortError') copyFallback(fullVariablePaymentUrl);
           }
         } else {
           copyFallback(fullVariablePaymentUrl);
@@ -1310,7 +1351,7 @@
 
       function copyFallback(url) {
         navigator.clipboard.writeText(url);
-        alert('Payment link copied to clipboard! (Image sharing is not supported by your browser directly, but link is ready to paste).');
+        alert('Payment link copied to clipboard!');
       }
     }
 
@@ -1392,7 +1433,7 @@
               <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-800 font-black text-[10px] flex items-center justify-center border border-blue-200">${idx + 1}</span>
               <div>
                 <div class="font-black text-slate-900">${h.company}</div>
-                <div class="text-[10px] text-slate-500 font-semibold">Loan: ${h.loanId} • ${h.date}</div>
+                <div class="text-[10px] text-slate-500 font-semibold">Payer: ${h.customer || 'Customer'} • Loan: ${h.loanId}</div>
               </div>
             </div>
             <span class="font-black text-blue-700 bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-200">₹${h.amount}</span>
@@ -1416,16 +1457,19 @@
       const item = history[idx];
       if (!item) return;
 
-      const note = encodeURIComponent(`Loan:${item.loanId} Ag:${item.agent}`);
+      const cust = item.customer || "Customer";
+      const note = encodeURIComponent(`Cust:${cust} Loan:${item.loanId} Ag:${item.agent}`);
       const encCompany = encodeURIComponent(item.company);
       const uri = `upi://pay?pa=${item.upi}&pn=${encCompany}&am=${item.amount}&cu=INR&tn=${note}&mode=02&purpose=00`;
 
       histQr.value = uri;
 
       document.getElementById('histModalCompany').textContent = item.company;
+      document.getElementById('histModalCustomer').textContent = `Payer: ${cust}`;
       document.getElementById('histModalLoan').textContent = `Loan ID: ${item.loanId} | Agent: ${item.agent}`;
       document.getElementById('histModalAmount').textContent = `₹${item.amount}`;
 
+      document.getElementById('histQrClickBox').onclick = () => launchUpiAppIntent('generic', uri);
       document.getElementById('histPayBtn').onclick = () => launchUpiAppIntent('generic', uri);
       document.getElementById('histReshareBtn').onclick = () => shareSmartVariableLink(item);
 
@@ -1461,6 +1505,7 @@
     function generateCoffeeQR() {
       document.getElementById('amount').value = '50';
       document.getElementById('loanId').value = 'DEV-TIP';
+      document.getElementById('customerName').value = 'Developer Supporter';
       proceedToPageTwo();
     }
   </script>
