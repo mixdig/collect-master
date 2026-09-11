@@ -416,7 +416,6 @@
         </button>
       </div>
 
-      <!-- Animated Progress Bar -->
       <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
         <div id="countdownProgressBar" class="bg-blue-600 h-full rounded-full transition-all duration-1000 ease-linear" style="width: 100%;"></div>
       </div>
@@ -509,7 +508,7 @@
             <span class="text-[11px] font-black text-slate-700">BHIM</span>
           </div>
 
-          <div class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white border border-slate-200 shadow-xs">
+          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-slate-200 shadow-xs">
             <span class="text-[11px] font-black text-[#232F3E]">amazon<span class="text-[#FF9900]">pay</span></span>
           </div>
         </div>
@@ -547,8 +546,9 @@
         <button onclick="downloadFrostedStandee()" class="py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-blue-600/20 hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2">
           <i data-lucide="download" class="w-4 h-4"></i> Download Card
         </button>
-        <button onclick="shareSmartVariableLink()" class="py-3.5 glass-surface text-blue-700 font-extrabold text-xs rounded-2xl hover:bg-white active:scale-95 transition flex items-center justify-center gap-2">
-          <i data-lucide="share-2" class="w-4 h-4 text-blue-600"></i> Share Smart Link
+        <button id="mainShareBtn" onclick="shareSmartVariableLink()" class="py-3.5 glass-surface text-blue-700 font-extrabold text-xs rounded-2xl hover:bg-white active:scale-95 transition flex items-center justify-center gap-2">
+          <i data-lucide="share-2" class="w-4 h-4 text-blue-600"></i>
+          <span>Share Smart Link & QR</span>
         </button>
       </div>
 
@@ -726,7 +726,6 @@
 
         if (secondsLeft <= 0) {
           clearInterval(countdownInterval);
-          // Auto-Redirect directly to the Multi-UPI app options modal
           openPaymentPortalModal();
         }
       }, 1000);
@@ -955,7 +954,6 @@
 
         generateQR(false);
 
-        // Start 1 minute countdown on customer QR standee
         startPayerCountdown();
         lucide.createIcons();
       }
@@ -999,45 +997,10 @@
       }, 500);
     }
 
-    async function shareSmartVariableLink(customItem = null) {
-      recordShareMemory();
-
-      const company = customItem ? customItem.company : document.getElementById('companyName').value.trim();
-      const amount = customItem ? customItem.amount : document.getElementById('amount').value.trim();
-      const loanId = customItem ? customItem.loanId : document.getElementById('loanId').value.trim();
-      const agent = customItem ? customItem.agent : document.getElementById('agentName').value.trim();
-      const upi = customItem ? customItem.upi : document.getElementById('upiId').value.trim();
-
-      const baseUrl = window.location.href.split('?')[0];
-
-      const queryParams = new URLSearchParams({
-        pay: 'true',
-        am: amount,
-        loan: loanId,
-        cmp: company,
-        ag: agent,
-        upi: upi
-      });
-
-      const fullVariablePaymentUrl = `${baseUrl}?${queryParams.toString()}`;
-      const shareText = `COLLECT MASTER PAYMENT NOTICE\nCompany: ${company}\nDue Amount: ₹${amount}\nLoan ID: ${loanId}\nPay Instantly Online: ${fullVariablePaymentUrl}`;
-
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: `Payment Notice: ${company}`,
-            text: shareText,
-            url: fullVariablePaymentUrl
-          });
-        } catch (e) {}
-      } else {
-        navigator.clipboard.writeText(fullVariablePaymentUrl);
-        alert('Payment link copied! The payer will only see the locked payment screen, countdown timer & QR code.');
-      }
-    }
-
-    // EXPORT STANDEE
-    function downloadFrostedStandee() {
+    // =========================================================================
+    // CORE STAND CANVAS GENERATOR (USED BOTH FOR DOWNLOAD & IMAGE SHARING)
+    // =========================================================================
+    function generateStandeeBlob(callback) {
       try {
         const company = document.getElementById('cardCompany').textContent;
         const agent = document.getElementById('cardAgent').textContent;
@@ -1089,7 +1052,7 @@
         ctx.textAlign = 'center';
         ctx.fillText('COLLECT MASTER OFFICIAL STANDEE', 360, 92);
 
-        const finalizeAndSave = (logoLoadedImg) => {
+        const finalizeCanvas = (logoLoadedImg) => {
           ctx.textAlign = 'center';
           if (logoLoadedImg) {
             ctx.save();
@@ -1239,29 +1202,115 @@
           });
 
           canvas.toBlob((blob) => {
-            if (!blob) return alert('Canvas export failed');
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `CollectMaster_Standee_${loanId || 'QR'}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            callback(blob, loanId);
           }, 'image/png');
         };
 
         if (merchantLogoBase64) {
           const logoImg = new Image();
-          logoImg.onload = () => finalizeAndSave(logoImg);
-          logoImg.onerror = () => finalizeAndSave(null);
+          logoImg.onload = () => finalizeCanvas(logoImg);
+          logoImg.onerror = () => finalizeCanvas(null);
           logoImg.src = merchantLogoBase64;
         } else {
-          finalizeAndSave(null);
+          finalizeCanvas(null);
         }
 
       } catch (err) {
-        alert('Download error: ' + err.message);
+        console.error(err);
+        callback(null, null);
+      }
+    }
+
+    // DOWNLOAD STAND
+    function downloadFrostedStandee() {
+      generateStandeeBlob((blob, loanId) => {
+        if (!blob) return alert('Canvas export failed');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `CollectMaster_Standee_${loanId || 'QR'}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      });
+    }
+
+    // =========================================================================
+    // SHARE SMART LINK + LIVE QR STANDEE IMAGE TOGETHER (NATIVE SYSTEM SHARE)
+    // =========================================================================
+    async function shareSmartVariableLink(customItem = null) {
+      recordShareMemory();
+
+      const company = customItem ? customItem.company : document.getElementById('companyName').value.trim();
+      const amount = customItem ? customItem.amount : document.getElementById('amount').value.trim();
+      const loanId = customItem ? customItem.loanId : document.getElementById('loanId').value.trim();
+      const agent = customItem ? customItem.agent : document.getElementById('agentName').value.trim();
+      const upi = customItem ? customItem.upi : document.getElementById('upiId').value.trim();
+
+      const baseUrl = window.location.href.split('?')[0];
+
+      const queryParams = new URLSearchParams({
+        pay: 'true',
+        am: amount,
+        loan: loanId,
+        cmp: company,
+        ag: agent,
+        upi: upi
+      });
+
+      const fullVariablePaymentUrl = `${baseUrl}?${queryParams.toString()}`;
+      const shareText = `COLLECT MASTER PAYMENT NOTICE\nCompany: ${company}\nDue Amount: ₹${amount}\nLoan ID: ${loanId}\nPay Instantly Online: ${fullVariablePaymentUrl}`;
+
+      // Temporarily update share button state
+      const shareBtn = document.getElementById('mainShareBtn');
+      const originalHtml = shareBtn ? shareBtn.innerHTML : '';
+      if (shareBtn && !customItem) {
+        shareBtn.innerHTML = `<span class="animate-spin text-xs">⏳</span> Generating QR Image...`;
+      }
+
+      // Generate HD Standee PNG file to share
+      generateStandeeBlob(async (blob, lid) => {
+        if (shareBtn && !customItem) shareBtn.innerHTML = originalHtml;
+
+        let shareData = {
+          title: `Payment Notice: ${company}`,
+          text: shareText,
+          url: fullVariablePaymentUrl
+        };
+
+        let fileShared = false;
+
+        // Attach Image File if supported by Browser / WebShare API
+        if (blob && navigator.canShare) {
+          try {
+            const qrFile = new File([blob], `CollectMaster_${lid || 'QR'}.png`, { type: 'image/png' });
+            if (navigator.canShare({ files: [qrFile] })) {
+              shareData.files = [qrFile];
+              fileShared = true;
+            }
+          } catch (e) {
+            console.warn('File share check error:', e);
+          }
+        }
+
+        if (navigator.share) {
+          try {
+            await navigator.share(shareData);
+          } catch (err) {
+            if (err.name !== 'AbortError') {
+              // Fallback to text copy if sharing failed
+              copyFallback(fullVariablePaymentUrl);
+            }
+          }
+        } else {
+          copyFallback(fullVariablePaymentUrl);
+        }
+      });
+
+      function copyFallback(url) {
+        navigator.clipboard.writeText(url);
+        alert('Payment link copied to clipboard! (Image sharing is not supported by your browser directly, but link is ready to paste).');
       }
     }
 
@@ -1354,7 +1403,7 @@
               <i data-lucide="qr-code" class="w-3.5 h-3.5"></i> View QR
             </button>
             <button onclick="reshareFromHistory(${idx})" class="flex-1 py-1.5 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 transition">
-              <i data-lucide="share-2" class="w-3.5 h-3.5 text-blue-600"></i> Reshare
+              <i data-lucide="share-2" class="w-3.5 h-3.5 text-blue-600"></i> Reshare QR & Link
             </button>
           </div>
         </div>
