@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -128,7 +127,7 @@
     .corner-bl { bottom: 10px; left: 10px; border-width: 0 0 3.5px 3.5px; border-bottom-left-radius: 14px; }
     .corner-br { bottom: 10px; right: 10px; border-width: 0 3.5px 3.5px 0; border-bottom-right-radius: 14px; }
 
-    /* Laser Scanner Beam */
+    /* Laser Beam */
     .scanner-line {
       position: absolute;
       left: 14px;
@@ -173,9 +172,9 @@
       
       <!-- MERCHANT NAV CONTROLS -->
       <div id="merchantNavControls" class="flex items-center gap-1.5">
-        <button onclick="openApkModal()" title="Download Official APK" class="p-2 rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100 active:scale-95 transition border border-emerald-200 flex items-center gap-1">
+        <button onclick="openAppModal()" title="Download Official App" class="p-2 rounded-xl text-emerald-700 bg-emerald-50 hover:bg-emerald-100 active:scale-95 transition border border-emerald-200 flex items-center gap-1">
           <i data-lucide="download" class="w-3.5 h-3.5"></i>
-          <span class="text-[10px] font-extrabold">APK</span>
+          <span class="text-[10px] font-extrabold">App</span>
         </button>
         <button onclick="toggleHistory()" title="Last 10 Transactions" class="p-2 rounded-xl text-slate-700 hover:bg-white/80 active:scale-95 transition">
           <i data-lucide="history" class="w-4 h-4"></i>
@@ -198,18 +197,18 @@
   <!-- ================================================================= -->
   <section id="pageOne" class="relative z-10 max-w-md mx-auto p-4 space-y-4">
 
-    <!-- OFFICIAL ANDROID APK BANNER -->
-    <div onclick="openApkModal()" class="glass-surface p-3 rounded-2xl flex items-center justify-between border border-emerald-200/80 shadow-xs hover:border-emerald-400 active:scale-[0.99] transition cursor-pointer">
+    <!-- OFFICIAL ANDROID APP BANNER -->
+    <div onclick="openAppModal()" class="glass-surface p-3 rounded-2xl flex items-center justify-between border border-emerald-200/80 shadow-xs hover:border-emerald-400 active:scale-[0.99] transition cursor-pointer">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
           <i data-lucide="smartphone" class="w-4 h-4"></i>
         </div>
         <div>
-          <h4 class="text-xs font-black text-slate-900">Download Official Android APK</h4>
+          <h4 class="text-xs font-black text-slate-900">Download Official Android App</h4>
           <p class="text-[10px] text-slate-500">v2.4 Offline App • 100% Safe Direct Install</p>
         </div>
       </div>
-      <span class="px-2.5 py-1 bg-emerald-600 text-white text-[10px] font-black rounded-xl shadow-xs">Get APK</span>
+      <span class="px-2.5 py-1 bg-emerald-600 text-white text-[10px] font-black rounded-xl shadow-xs">Get App</span>
     </div>
 
     <!-- METRICS TILES -->
@@ -568,7 +567,7 @@
         </button>
         <button id="mainShareBtn" onclick="shareSmartVariableLink()" class="py-3.5 glass-surface text-blue-700 font-extrabold text-xs rounded-2xl hover:bg-white active:scale-95 transition flex items-center justify-center gap-2">
           <i data-lucide="share-2" class="w-4 h-4 text-blue-600"></i>
-          <span>Share Smart Link & QR</span>
+          <span>Share Smart Link</span>
         </button>
       </div>
 
@@ -646,18 +645,18 @@
   </div>
 
   <!-- ============================================================== -->
-  <!-- POPUP MODAL: HOW TO INSTALL APK GUIDANCE                      -->
+  <!-- POPUP MODAL: HOW TO INSTALL APP GUIDANCE                      -->
   <!-- ============================================================== -->
-  <div id="apkInstallModal" class="fixed inset-0 z-50 bg-slate-950/75 hidden backdrop-blur-md flex items-center justify-center p-4">
+  <div id="appInstallModal" class="fixed inset-0 z-50 bg-slate-950/75 hidden backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl border border-white animate-in fade-in zoom-in-95">
       <div class="bg-gradient-to-r from-emerald-600 to-teal-700 p-4 text-white text-center relative">
-        <button onclick="closeApkModal()" class="absolute right-3.5 top-3.5 p-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white transition">
+        <button onclick="closeAppModal()" class="absolute right-3.5 top-3.5 p-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white transition">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
         <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/20 text-[10px] font-black uppercase tracking-wider mb-1">
           <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> 100% Verified Safe
         </div>
-        <h3 class="text-base font-black tracking-tight">How to Install Collect Master APK</h3>
+        <h3 class="text-base font-black tracking-tight">How to Install Collect Master App</h3>
       </div>
 
       <div class="p-5 space-y-3.5">
@@ -665,8 +664,8 @@
         <div class="flex items-start gap-3">
           <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-black text-xs flex-shrink-0 mt-0.5">1</div>
           <div>
-            <h5 class="text-xs font-bold text-slate-900">Download APK File</h5>
-            <p class="text-[11px] text-slate-500">Tap the button below to download the official <strong>app.apk</strong>.</p>
+            <h5 class="text-xs font-bold text-slate-900">Download App Package</h5>
+            <p class="text-[11px] text-slate-500">Tap the button below to download the official <strong>Collect Master App</strong>.</p>
           </div>
         </div>
 
@@ -674,8 +673,8 @@
         <div class="flex items-start gap-3">
           <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-black text-xs flex-shrink-0 mt-0.5">2</div>
           <div>
-            <h5 class="text-xs font-bold text-slate-900">Allow "Install Unknown Apps"</h5>
-            <p class="text-[11px] text-slate-500">If prompted by Chrome/Browser, enable <em>"Allow from this source"</em> in Android settings.</p>
+            <h5 class="text-xs font-bold text-slate-900">Allow Direct Installation</h5>
+            <p class="text-[11px] text-slate-500">If prompted by browser settings, toggle <em>"Allow installation from this source"</em>.</p>
           </div>
         </div>
 
@@ -684,16 +683,16 @@
           <div class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-black text-xs flex-shrink-0 mt-0.5">3</div>
           <div>
             <h5 class="text-xs font-bold text-slate-900">Tap Install & Launch</h5>
-            <p class="text-[11px] text-slate-500">Open the downloaded file from notifications and tap <strong>Install</strong> to start collecting offline.</p>
+            <p class="text-[11px] text-slate-500">Open the download notification and tap <strong>Install</strong> to start collecting offline.</p>
           </div>
         </div>
 
-        <!-- Direct Action Buttons -->
+        <!-- Action Buttons -->
         <div class="pt-2 space-y-2">
-          <a href="https://mixdig.github.io/collect-master/app.apk" download onclick="closeApkModal()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-emerald-600/25 active:scale-95 transition flex items-center justify-center gap-2">
-            <i data-lucide="download" class="w-4 h-4"></i> Download APK Now
+          <a href="https://mixdig.github.io/collect-master/app.apk" download onclick="closeAppModal()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-emerald-600/25 active:scale-95 transition flex items-center justify-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i> Download App Now
           </a>
-          <button onclick="closeApkModal()" class="w-full py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition">
+          <button onclick="closeAppModal()" class="w-full py-2 text-xs font-bold text-slate-400 hover:text-slate-600 transition">
             Close
           </button>
         </div>
@@ -789,14 +788,14 @@
       renderHistory();
     });
 
-    // APK MODAL CONTROLS
-    function openApkModal() {
-      document.getElementById('apkInstallModal').classList.remove('hidden');
+    // APP MODAL CONTROLS
+    function openAppModal() {
+      document.getElementById('appInstallModal').classList.remove('hidden');
       lucide.createIcons();
     }
 
-    function closeApkModal() {
-      document.getElementById('apkInstallModal').classList.add('hidden');
+    function closeAppModal() {
+      document.getElementById('appInstallModal').classList.add('hidden');
     }
 
     // 1-MINUTE TIMER FOR PAYER LINK
@@ -1078,6 +1077,7 @@
       document.getElementById('paymentPortalModal').classList.add('hidden');
     }
 
+    // 100% RELIABLE UPI INTENT (ANCHOR CLICK)
     function launchUpiAppIntent(appType, customUri = "") {
       let baseUri = customUri || activeUpiUri;
       if (!baseUri) {
@@ -1113,7 +1113,7 @@
       }
     }
 
-    // CORE CANVAS GENERATOR WITH CUSTOMER NAME
+    // CORE CANVAS GENERATOR FOR DOWNLOAD
     function generateStandeeBlob(callback) {
       try {
         const company = document.getElementById('cardCompany').textContent;
@@ -1199,7 +1199,7 @@
           ctx.font = '600 15px sans-serif';
           ctx.fillText(agent, 360, 178);
 
-          // Draw Customer Pill on Standee Canvas
+          // Payer Pill
           ctx.fillStyle = '#f1f5f9';
           drawRoundedRect(ctx, 230, 195, 260, 30, 15);
           ctx.strokeStyle = '#cbd5e1';
@@ -1367,16 +1367,18 @@
       });
     }
 
-    // SHARE SMART LINK + IMAGE WITH CUSTOMER NAME
+    // =========================================================================
+    // 100% INSTANT SMART LINK SHARING (USER GESTURE PRESERVED)
+    // =========================================================================
     async function shareSmartVariableLink(customItem = null) {
       recordShareMemory();
 
-      const company = customItem ? customItem.company : document.getElementById('companyName').value.trim();
-      const amount = customItem ? customItem.amount : document.getElementById('amount').value.trim();
-      const loanId = customItem ? customItem.loanId : document.getElementById('loanId').value.trim();
-      const agent = customItem ? customItem.agent : document.getElementById('agentName').value.trim();
-      const customer = customItem ? customItem.customer : document.getElementById('customerName').value.trim();
-      const upi = customItem ? customItem.upi : document.getElementById('upiId').value.trim();
+      const company = customItem ? customItem.company : (document.getElementById('companyName')?.value.trim() || 'Merchant');
+      const amount = customItem ? customItem.amount : (document.getElementById('amount')?.value.trim() || '0');
+      const loanId = customItem ? customItem.loanId : (document.getElementById('loanId')?.value.trim() || 'N/A');
+      const agent = customItem ? customItem.agent : (document.getElementById('agentName')?.value.trim() || 'Direct');
+      const customer = customItem ? customItem.customer : (document.getElementById('customerName')?.value.trim() || 'Customer');
+      const upi = customItem ? customItem.upi : (document.getElementById('upiId')?.value.trim() || '');
 
       const baseUrl = window.location.href.split('?')[0];
 
@@ -1393,47 +1395,48 @@
       const fullVariablePaymentUrl = `${baseUrl}?${queryParams.toString()}`;
       const shareText = `COLLECT MASTER PAYMENT NOTICE\nCompany: ${company}\nPayer: ${customer}\nDue Amount: ₹${amount}\nLoan ID: ${loanId}\nPay Instantly Online: ${fullVariablePaymentUrl}`;
 
-      const shareBtn = document.getElementById('mainShareBtn');
-      const originalHtml = shareBtn ? shareBtn.innerHTML : '';
-      if (shareBtn && !customItem) {
-        shareBtn.innerHTML = `<span class="animate-spin text-xs">⏳</span> Generating QR Image...`;
+      // Instant Native Share Sheet (Direct gesture execution)
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `Payment Notice: ${company}`,
+            text: shareText,
+            url: fullVariablePaymentUrl
+          });
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return; // User closed sheet
+        }
       }
 
-      generateStandeeBlob(async (blob, lid) => {
-        if (shareBtn && !customItem) shareBtn.innerHTML = originalHtml;
+      // Universal Clipboard Fallback
+      copyToClipboardFallback(fullVariablePaymentUrl, shareText);
+    }
 
-        let shareData = {
-          title: `Payment Notice: ${company}`,
-          text: shareText,
-          url: fullVariablePaymentUrl
-        };
-
-        if (blob && navigator.canShare) {
-          try {
-            const qrFile = new File([blob], `CollectMaster_${lid || 'QR'}.png`, { type: 'image/png' });
-            if (navigator.canShare({ files: [qrFile] })) {
-              shareData.files = [qrFile];
-            }
-          } catch (e) {
-            console.warn('File share check error:', e);
-          }
-        }
-
-        if (navigator.share) {
-          try {
-            await navigator.share(shareData);
-          } catch (err) {
-            if (err.name !== 'AbortError') copyFallback(fullVariablePaymentUrl);
-          }
-        } else {
-          copyFallback(fullVariablePaymentUrl);
-        }
-      });
-
-      function copyFallback(url) {
-        navigator.clipboard.writeText(url);
-        alert('Payment link copied to clipboard!');
+    function copyToClipboardFallback(url, fullText) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(fullText).then(() => {
+          alert("✅ Payment Link Copied!\n\nLink has been copied to your clipboard. You can paste and send it directly via WhatsApp or SMS.");
+        }).catch(() => {
+          promptCopyFallback(url);
+        });
+      } else {
+        promptCopyFallback(url);
       }
+    }
+
+    function promptCopyFallback(url) {
+      const input = document.createElement("textarea");
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      try {
+        document.execCommand('copy');
+        alert("✅ Link Copied to Clipboard!");
+      } catch (e) {
+        window.prompt("Copy payment link:", url);
+      }
+      document.body.removeChild(input);
     }
 
     function initProfiles() {
@@ -1550,6 +1553,7 @@
       document.getElementById('histModalLoan').textContent = `Loan ID: ${item.loanId} | Agent: ${item.agent}`;
       document.getElementById('histModalAmount').textContent = `₹${item.amount}`;
 
+      document.getElementById('histQrClickBox').onclick = () => launchUpiAppIntent('generic', uri);
       document.getElementById('histPayBtn').onclick = () => launchUpiAppIntent('generic', uri);
       document.getElementById('histReshareBtn').onclick = () => shareSmartVariableLink(item);
 
