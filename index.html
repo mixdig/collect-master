@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Collect Master - Elite Payment Gateway</title>
+  <title>Collect Master - Payment Gateway</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
@@ -170,7 +169,9 @@
           <p class="text-[9px] font-bold text-blue-700 tracking-wider mt-0.5 uppercase">Dynamic QR Gateway</p>
         </div>
       </div>
-      <div class="flex items-center gap-1">
+      
+      <!-- MERCHANT ONLY CONTROLS (Hidden when payer opens via shared link) -->
+      <div id="merchantNavControls" class="flex items-center gap-1">
         <button onclick="toggleHistory()" title="Last 10 Transactions" class="p-2 rounded-xl text-slate-700 hover:bg-white/80 active:scale-95 transition">
           <i data-lucide="history" class="w-4 h-4"></i>
         </button>
@@ -178,12 +179,18 @@
           <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
         </button>
       </div>
+
+      <!-- PAYER MODE BADGE -->
+      <div id="payerLockBadge" class="hidden items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+        <span>Verified Payer</span>
+      </div>
     </div>
   </header>
 
-  <!-- ========================================== -->
-  <!-- PAGE 1: CONFIGURATION & SETUP               -->
-  <!-- ========================================== -->
+  <!-- ================================================================= -->
+  <!-- PAGE 1: CONFIGURATION & SETUP (MERCHANT ONLY - HIDDEN FROM PAYER) -->
+  <!-- ================================================================= -->
   <section id="pageOne" class="relative z-10 max-w-md mx-auto p-4 space-y-4">
 
     <!-- METRICS TILES -->
@@ -208,7 +215,7 @@
       </div>
     </div>
 
-    <!-- MERCHANT SETUP -->
+    <!-- MERCHANT SETUP FORM -->
     <div class="glass-surface rounded-3xl p-5 shadow-sm">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xs font-extrabold text-slate-500 uppercase tracking-wider">Merchant Profile</h2>
@@ -336,13 +343,13 @@
   </section>
 
 
-  <!-- ========================================== -->
-  <!-- PAGE 2: COLLECT MASTER STANDEE & ACTIONS   -->
-  <!-- ========================================== -->
+  <!-- ========================================================== -->
+  <!-- PAGE 2: LOCKED PAYMENT SCREEN & STANDEE (SEEN BY PAYER)     -->
+  <!-- ========================================================== -->
   <section id="pageTwo" class="relative z-10 max-w-md mx-auto p-4 space-y-4 hidden">
 
-    <!-- TOP NAV -->
-    <div class="flex items-center justify-between glass-surface p-3.5 rounded-2xl shadow-sm">
+    <!-- TOP NAV (MODIFY DETAILS BUTTON ONLY FOR MERCHANT) -->
+    <div id="merchantNavBack" class="flex items-center justify-between glass-surface p-3.5 rounded-2xl shadow-sm">
       <button onclick="goToPageOne()" class="flex items-center gap-2 text-xs font-bold text-blue-700 hover:text-blue-900 active:scale-95 transition">
         <i data-lucide="arrow-left" class="w-4 h-4"></i>
         <span>Modify Details</span>
@@ -351,6 +358,15 @@
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         Collect Master Verified
       </span>
+    </div>
+
+    <!-- PAYER SECURE HEADER (SHOWN ONLY TO PAYER TO CONFIRM TAMPER PROTECTION) -->
+    <div id="payerSecureHeader" class="hidden items-center justify-between glass-surface p-3 rounded-2xl shadow-sm">
+      <div class="flex items-center gap-2">
+        <i data-lucide="lock" class="w-4 h-4 text-emerald-600"></i>
+        <span class="text-xs font-bold text-slate-800">Secure Direct Payer Terminal</span>
+      </div>
+      <span class="text-[10px] font-black text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">NPCI PROTECTED</span>
     </div>
 
     <!-- STANDEE CARD -->
@@ -466,8 +482,8 @@
       </div>
     </div>
 
-    <!-- ACTION BUTTONS -->
-    <div class="space-y-2.5">
+    <!-- ACTION BUTTONS (MERCHANT CONTROLS: DOWNLOAD & SHARE LINK) -->
+    <div id="merchantActionControls" class="space-y-2.5">
       <div class="grid grid-cols-2 gap-2.5">
         <button onclick="downloadFrostedStandee()" class="py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-blue-600/20 hover:brightness-110 active:scale-95 transition flex items-center justify-center gap-2">
           <i data-lucide="download" class="w-4 h-4"></i> Download Card
@@ -483,10 +499,19 @@
       </button>
     </div>
 
+    <!-- PAYER INSTANT ACTION BAR (Trigger App Modal If Closed) -->
+    <div id="payerActionControls" class="hidden space-y-2">
+      <button onclick="openPaymentPortalModal()" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-blue-600/25 active:scale-98 transition flex items-center justify-center gap-2">
+        <i data-lucide="zap" class="w-4 h-4"></i>
+        Pay Instantly via UPI App
+      </button>
+      <p class="text-[10px] text-center text-slate-400">Scan the QR code above or tap the button to pay directly.</p>
+    </div>
+
   </section>
 
   <!-- ========================================== -->
-  <!-- 100% WORKING POPUP PAYMENT MODAL           -->
+  <!-- POPUP PAYMENT SCREEN                       -->
   <!-- ========================================== -->
   <div id="paymentPortalModal" class="fixed inset-0 z-50 bg-slate-950/70 hidden backdrop-blur-md flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150 border border-white">
@@ -521,7 +546,7 @@
 
         <p class="text-[11px] font-bold text-slate-500 mb-3">Pay using preferred UPI application:</p>
 
-        <!-- LIVE 100% WORKING INTENT APP BUTTONS -->
+        <!-- LIVE INTENT APP BUTTONS -->
         <div class="grid grid-cols-2 gap-2 text-xs font-black">
           <button onclick="launchUpiAppIntent('gpay')" class="p-3 glass-surface rounded-2xl hover:bg-white text-slate-800 flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs">
             <svg class="w-4 h-4" viewBox="0 0 24 24">
@@ -545,13 +570,13 @@
         </div>
 
         <button onclick="closePaymentPortalModal()" class="mt-5 text-xs font-bold text-slate-400 hover:text-slate-700">
-          Dismiss Window
+          Close Window (View QR Code)
         </button>
       </div>
     </div>
   </div>
 
-  <!-- LAST 10 TRANSACTIONS DRAWER -->
+  <!-- LAST 10 TRANSACTIONS DRAWER (MERCHANT ONLY) -->
   <div id="historyDrawer" class="fixed inset-0 z-50 bg-slate-950/60 hidden backdrop-blur-md flex justify-end">
     <div class="w-full max-w-sm glass-card h-full p-5 overflow-y-auto flex flex-col justify-between shadow-2xl border-l border-white">
       <div>
@@ -580,6 +605,7 @@
   <script>
     let activeUpiUri = "";
     let merchantLogoBase64 = localStorage.getItem('cm_custom_logo') || "";
+    let isPayerMode = false; // Locks the customer into Payer View
 
     let qr = new QRious({ 
       element: document.getElementById('qrCodeCanvas'), 
@@ -592,7 +618,7 @@
       initMetrics();
       initProfiles();
       initLogoState();
-      checkUrlQueryForPayment(); // Auto-detect variable link & pop modal
+      checkUrlQueryForPayment(); // Auto-locks into QR standee if link has payment params
       renderHistory();
     });
 
@@ -614,6 +640,7 @@
     }
 
     function goToPageOne() {
+      if (isPayerMode) return; // Strict lock: Customer cannot navigate back to Page 1
       document.getElementById('pageTwo').classList.add('hidden');
       document.getElementById('pageOne').classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -645,28 +672,24 @@
     }
 
     function setLogoElements(src) {
-      // 1. Setup Page 1 Preview
       const previewImg = document.getElementById('logoPreviewImg');
       const defaultIcon = document.getElementById('logoDefaultIcon');
       previewImg.src = src;
       previewImg.classList.remove('hidden');
       defaultIcon.classList.add('hidden');
 
-      // 2. Standee Merchant Name Logo
       const cardLogoImg = document.getElementById('cardMerchantLogoImg');
       const cardLogoDef = document.getElementById('cardMerchantLogoDefIcon');
       cardLogoImg.src = src;
       cardLogoImg.classList.remove('hidden');
       cardLogoDef.classList.add('hidden');
 
-      // 3. Modal Company Logo
       const modalLogoImg = document.getElementById('modalMerchantLogoImg');
       const modalLogoDef = document.getElementById('modalMerchantLogoDefIcon');
       modalLogoImg.src = src;
       modalLogoImg.classList.remove('hidden');
       modalLogoDef.classList.add('hidden');
 
-      // 4. QR Center Overlay
       const qrCenterImg = document.getElementById('qrCenterLogoImg');
       const qrCenterDef = document.getElementById('qrCenterDefaultIcon');
       qrCenterImg.src = src;
@@ -678,29 +701,17 @@
       merchantLogoBase64 = "";
       localStorage.removeItem('cm_custom_logo');
       
-      const previewImg = document.getElementById('logoPreviewImg');
-      const defaultIcon = document.getElementById('logoDefaultIcon');
-      previewImg.src = "";
-      previewImg.classList.add('hidden');
-      defaultIcon.classList.remove('hidden');
+      document.getElementById('logoPreviewImg').classList.add('hidden');
+      document.getElementById('logoDefaultIcon').classList.remove('hidden');
 
-      const cardLogoImg = document.getElementById('cardMerchantLogoImg');
-      const cardLogoDef = document.getElementById('cardMerchantLogoDefIcon');
-      cardLogoImg.src = "";
-      cardLogoImg.classList.add('hidden');
-      cardLogoDef.classList.remove('hidden');
+      document.getElementById('cardMerchantLogoImg').classList.add('hidden');
+      document.getElementById('cardMerchantLogoDefIcon').classList.remove('hidden');
 
-      const modalLogoImg = document.getElementById('modalMerchantLogoImg');
-      const modalLogoDef = document.getElementById('modalMerchantLogoDefIcon');
-      modalLogoImg.src = "";
-      modalLogoImg.classList.add('hidden');
-      modalLogoDef.classList.remove('hidden');
+      document.getElementById('modalMerchantLogoImg').classList.add('hidden');
+      document.getElementById('modalMerchantLogoDefIcon').classList.remove('hidden');
 
-      const qrCenterImg = document.getElementById('qrCenterLogoImg');
-      const qrCenterDef = document.getElementById('qrCenterDefaultIcon');
-      qrCenterImg.src = "";
-      qrCenterImg.classList.add('hidden');
-      qrCenterDef.classList.remove('hidden');
+      document.getElementById('qrCenterLogoImg').classList.add('hidden');
+      document.getElementById('qrCenterDefaultIcon').classList.remove('hidden');
       
       document.getElementById('logoFileInput').value = "";
     }
@@ -772,7 +783,7 @@
       document.getElementById('cardAmount').textContent = `₹${amount}`;
       document.getElementById('cardLoanId').textContent = loanId || 'N/A';
 
-      if (recordHistory) {
+      if (recordHistory && !isPayerMode) {
         saveHistoryItem({ 
           company, 
           agent, 
@@ -783,7 +794,128 @@
       }
     }
 
-    // EXPORT HIGH RESOLUTION STANDEE WITH EXACT PREVIEW BRANDING
+    // =========================================================================
+    // 100% WORKING SINGLE PAGE VARIABLE LINK - LOCKS PAYER TO QR (TAMPER-PROOF)
+    // =========================================================================
+    function checkUrlQueryForPayment() {
+      const p = new URLSearchParams(window.location.search);
+      
+      // If user came via payment link:
+      if (p.has('pay') || p.has('am') || p.has('loan')) {
+        isPayerMode = true; // Activate Lock Mode
+
+        if (p.get('am')) document.getElementById('amount').value = p.get('am');
+        if (p.get('loan')) document.getElementById('loanId').value = p.get('loan');
+        if (p.get('cmp')) document.getElementById('companyName').value = p.get('cmp');
+        if (p.get('ag')) document.getElementById('agentName').value = p.get('ag');
+        if (p.get('upi')) document.getElementById('upiId').value = p.get('upi');
+
+        // 1. Permanently remove Setup Page 1 from DOM so payer cannot access it
+        const pageOneEl = document.getElementById('pageOne');
+        if (pageOneEl) pageOneEl.remove();
+
+        // 2. Hide all merchant controls
+        document.getElementById('merchantNavControls').classList.add('hidden');
+        document.getElementById('merchantNavBack').classList.add('hidden');
+        document.getElementById('merchantActionControls').classList.add('hidden');
+
+        // 3. Show Payer mode headers
+        document.getElementById('payerLockBadge').classList.remove('hidden');
+        document.getElementById('payerLockBadge').classList.add('flex');
+        document.getElementById('payerSecureHeader').classList.remove('hidden');
+        document.getElementById('payerSecureHeader').classList.add('flex');
+        document.getElementById('payerActionControls').classList.remove('hidden');
+
+        // 4. Directly show Page 2 (Standee & QR Screen)
+        document.getElementById('pageTwo').classList.remove('hidden');
+
+        // 5. Generate QR and open the popup modal
+        generateQR(false);
+        openPaymentPortalModal();
+        lucide.createIcons();
+      }
+    }
+
+    function openPaymentPortalModal() {
+      const company = document.getElementById('companyName').value.trim();
+      const agent = document.getElementById('agentName').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const loanId = document.getElementById('loanId').value.trim();
+
+      document.getElementById('modalCompany').textContent = company || 'Merchant';
+      document.getElementById('modalAgent').textContent = `Agent: ${agent || 'Direct'}`;
+      document.getElementById('modalAmount').textContent = `₹${amount}`;
+      document.getElementById('modalLoanId').textContent = loanId || 'N/A';
+
+      recordImpression();
+      document.getElementById('paymentPortalModal').classList.remove('hidden');
+    }
+
+    // WHEN POPUP IS CLOSED BY PAYER: REMAINS 100% LOCKED ON QR CODE SCREEN
+    function closePaymentPortalModal() {
+      document.getElementById('paymentPortalModal').classList.add('hidden');
+      // In Payer mode, user is already locked on Page 2 (Standee QR card).
+      // Page 1 is deleted from DOM, so main website/setup panel never appears.
+    }
+
+    // TRIGGER NATIVE UPI APPS
+    function launchUpiAppIntent(appType) {
+      if (!activeUpiUri) generateQR(false);
+
+      let targetUri = activeUpiUri;
+      if (appType === 'gpay') {
+        targetUri = activeUpiUri.replace('upi://pay', 'tez://upi/pay');
+      } else if (appType === 'phonepe') {
+        targetUri = activeUpiUri.replace('upi://pay', 'phonepe://pay');
+      } else if (appType === 'paytm') {
+        targetUri = activeUpiUri.replace('upi://pay', 'paytmmp://pay');
+      }
+
+      window.location.href = targetUri;
+      setTimeout(() => {
+        window.location.href = activeUpiUri;
+      }, 500);
+    }
+
+    // SHARE LINK FUNCTION
+    async function shareSmartVariableLink() {
+      recordShareMemory();
+
+      const company = document.getElementById('companyName').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const loanId = document.getElementById('loanId').value.trim();
+      const agent = document.getElementById('agentName').value.trim();
+      const upi = document.getElementById('upiId').value.trim();
+
+      const baseUrl = window.location.href.split('?')[0];
+
+      const queryParams = new URLSearchParams({
+        pay: 'true',
+        am: amount,
+        loan: loanId,
+        cmp: company,
+        ag: agent,
+        upi: upi
+      });
+
+      const fullVariablePaymentUrl = `${baseUrl}?${queryParams.toString()}`;
+      const shareText = `COLLECT MASTER PAYMENT NOTICE\nCompany: ${company}\nDue Amount: ₹${amount}\nLoan ID: ${loanId}\nPay Instantly Online: ${fullVariablePaymentUrl}`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `Payment Notice: ${company}`,
+            text: shareText,
+            url: fullVariablePaymentUrl
+          });
+        } catch (e) {}
+      } else {
+        navigator.clipboard.writeText(fullVariablePaymentUrl);
+        alert('Payment link copied! The payer will only see the locked payment screen & QR code.');
+      }
+    }
+
+    // EXPORT HIGH RESOLUTION STANDEE
     function downloadFrostedStandee() {
       try {
         const company = document.getElementById('cardCompany').textContent;
@@ -797,7 +929,6 @@
         canvas.width = 720;
         canvas.height = 1060;
 
-        // Background
         const bgGrad = ctx.createLinearGradient(0, 0, 720, 1060);
         bgGrad.addColorStop(0, '#0a192f');
         bgGrad.addColorStop(0.5, '#0f274a');
@@ -805,14 +936,12 @@
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, 720, 1060);
 
-        // Ambient Light Orb
         const orb = ctx.createRadialGradient(360, 200, 10, 360, 200, 400);
         orb.addColorStop(0, 'rgba(0, 113, 227, 0.45)');
         orb.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = orb;
         ctx.fillRect(0, 0, 720, 700);
 
-        // Glass Container
         ctx.save();
         ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
         ctx.shadowBlur = 40;
@@ -825,7 +954,6 @@
         drawRoundedRect(ctx, 40, 40, 640, 980, 36);
         ctx.restore();
 
-        // Top Highlight Strip
         const topHolo = ctx.createLinearGradient(40, 40, 680, 40);
         topHolo.addColorStop(0, '#0071e3');
         topHolo.addColorStop(0.5, '#38bdf8');
@@ -833,7 +961,6 @@
         ctx.fillStyle = topHolo;
         ctx.fillRect(40, 40, 640, 10);
 
-        // Official Badge
         ctx.fillStyle = 'rgba(0, 113, 227, 0.1)';
         drawRoundedRect(ctx, 190, 70, 340, 34, 17);
         ctx.fillStyle = '#0071e3';
@@ -842,7 +969,6 @@
         ctx.fillText('COLLECT MASTER OFFICIAL STANDEE', 360, 92);
 
         const finalizeAndSave = (logoLoadedImg) => {
-          // Merchant Name + Logo beside it
           ctx.textAlign = 'center';
           if (logoLoadedImg) {
             ctx.save();
@@ -874,14 +1000,12 @@
           ctx.font = '600 16px sans-serif';
           ctx.fillText(agent, 360, 185);
 
-          // QR Box
           ctx.fillStyle = '#ffffff';
           drawRoundedRect(ctx, 160, 210, 400, 400, 28);
           ctx.strokeStyle = '#e2e8f0';
           ctx.lineWidth = 2;
           ctx.stroke();
 
-          // Corner Brackets
           ctx.strokeStyle = '#0071e3';
           ctx.lineWidth = 5;
           ctx.lineCap = 'round';
@@ -907,10 +1031,8 @@
           ctx.quadraticCurveTo(545, 595, 545, 595 - rad); ctx.lineTo(545, 595 - len);
           ctx.stroke();
 
-          // Draw QR Base
           ctx.drawImage(qrSource, 195, 245, 330, 330);
 
-          // Draw Center Logo inside QR
           if (logoLoadedImg) {
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
@@ -940,7 +1062,6 @@
             ctx.fillText('✓', 360, 418);
           }
 
-          // Amount Pill
           const amtGrad = ctx.createLinearGradient(210, 635, 510, 695);
           amtGrad.addColorStop(0, '#0071e3');
           amtGrad.addColorStop(1, '#4338ca');
@@ -951,7 +1072,6 @@
           ctx.font = '900 30px sans-serif';
           ctx.fillText(amount, 360, 675);
 
-          // Meta Info (UPI ID is NEVER drawn)
           ctx.fillStyle = '#334155';
           ctx.font = 'bold 17px sans-serif';
           ctx.fillText(`Loan / Reference ID: ${loanId}`, 360, 725);
@@ -960,7 +1080,6 @@
           ctx.font = 'bold 14px sans-serif';
           ctx.fillText('Collect Master Secure Gateway Verified', 360, 755);
 
-          // Divider
           ctx.strokeStyle = '#e2e8f0';
           ctx.lineWidth = 1.5;
           ctx.beginPath();
@@ -968,12 +1087,10 @@
           ctx.lineTo(620, 785);
           ctx.stroke();
 
-          // UPI App Logos Text
           ctx.fillStyle = '#64748b';
           ctx.font = 'bold 12px sans-serif';
           ctx.fillText('SUPPORTED UPI PAYMENT APPS', 360, 815);
 
-          // 5 COLORFUL AS-IT-IS UPI BADGES ON CANVAS
           const badges = [
             { name: 'GPay', x: 75, bg: '#ffffff', color: '#1e293b', dot: '#4285F4' },
             { name: 'PhonePe', x: 190, bg: '#ffffff', color: '#5f259f', dot: '#5f259f' },
@@ -983,27 +1100,23 @@
           ];
 
           badges.forEach(b => {
-            // Badge container
             ctx.fillStyle = b.bg;
             drawRoundedRect(ctx, b.x, 835, 105, 38, 12);
             ctx.strokeStyle = '#cbd5e1';
             ctx.lineWidth = 1;
             ctx.stroke();
 
-            // Colorful dot
             ctx.fillStyle = b.dot;
             ctx.beginPath();
             ctx.arc(b.x + 18, 854, 6, 0, Math.PI * 2);
             ctx.fill();
 
-            // Text
             ctx.fillStyle = b.color;
             ctx.font = 'bold 12px sans-serif';
             ctx.textAlign = 'left';
             ctx.fillText(b.name, b.x + 30, 858);
           });
 
-          // Blob Safe Download
           canvas.toBlob((blob) => {
             if (!blob) return alert('Canvas export failed');
             const url = URL.createObjectURL(blob);
@@ -1031,102 +1144,6 @@
       }
     }
 
-    // 100% WORKING VARIABLE PAYMENT LINK SHARE
-    async function shareSmartVariableLink() {
-      recordShareMemory();
-
-      const company = document.getElementById('companyName').value.trim();
-      const amount = document.getElementById('amount').value.trim();
-      const loanId = document.getElementById('loanId').value.trim();
-      const agent = document.getElementById('agentName').value.trim();
-      const upi = document.getElementById('upiId').value.trim();
-
-      // Clean single page URL without existing query params
-      const baseUrl = window.location.href.split('?')[0];
-
-      const queryParams = new URLSearchParams({
-        pay: 'true',
-        am: amount,
-        loan: loanId,
-        cmp: company,
-        ag: agent,
-        upi: upi
-      });
-
-      const fullVariablePaymentUrl = `${baseUrl}?${queryParams.toString()}`;
-      const shareText = `COLLECT MASTER PAYMENT NOTICE\nCompany: ${company}\nDue Amount: ₹${amount}\nLoan ID: ${loanId}\nPay Instantly Online: ${fullVariablePaymentUrl}`;
-
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: `Payment Notice: ${company}`,
-            text: shareText,
-            url: fullVariablePaymentUrl
-          });
-        } catch (e) {}
-      } else {
-        navigator.clipboard.writeText(fullVariablePaymentUrl);
-        alert('Payment link copied to clipboard! Anyone opening this link will directly see the payment modal.');
-      }
-    }
-
-    // 100% AUTO-POPUP ON VARIABLE LINK ACCESS
-    function checkUrlQueryForPayment() {
-      const p = new URLSearchParams(window.location.search);
-      if (p.has('pay') || p.has('am') || p.has('loan')) {
-        if (p.get('am')) document.getElementById('amount').value = p.get('am');
-        if (p.get('loan')) document.getElementById('loanId').value = p.get('loan');
-        if (p.get('cmp')) document.getElementById('companyName').value = p.get('cmp');
-        if (p.get('ag')) document.getElementById('agentName').value = p.get('ag');
-        if (p.get('upi')) document.getElementById('upiId').value = p.get('upi');
-        
-        generateQR(false);
-        // Automatically open the payment popup directly
-        openPaymentPortalModal();
-      }
-    }
-
-    function openPaymentPortalModal() {
-      const company = document.getElementById('companyName').value.trim();
-      const agent = document.getElementById('agentName').value.trim();
-      const amount = document.getElementById('amount').value.trim();
-      const loanId = document.getElementById('loanId').value.trim();
-
-      document.getElementById('modalCompany').textContent = company || 'Merchant';
-      document.getElementById('modalAgent').textContent = `Agent: ${agent || 'Direct'}`;
-      document.getElementById('modalAmount').textContent = `₹${amount}`;
-      document.getElementById('modalLoanId').textContent = loanId || 'N/A';
-
-      recordImpression();
-      document.getElementById('paymentPortalModal').classList.remove('hidden');
-    }
-
-    function closePaymentPortalModal() {
-      document.getElementById('paymentPortalModal').classList.add('hidden');
-    }
-
-    // 100% WORKING UPI APP INTENT TRIGGER
-    function launchUpiAppIntent(appType) {
-      if (!activeUpiUri) generateQR(false);
-
-      let targetUri = activeUpiUri;
-
-      // Handle specific deep links for mobile devices
-      if (appType === 'gpay') {
-        targetUri = activeUpiUri.replace('upi://pay', 'tez://upi/pay');
-      } else if (appType === 'phonepe') {
-        targetUri = activeUpiUri.replace('upi://pay', 'phonepe://pay');
-      } else if (appType === 'paytm') {
-        targetUri = activeUpiUri.replace('upi://pay', 'paytmmp://pay');
-      }
-
-      // Attempt application launch with fallback to standard UPI deep link
-      window.location.href = targetUri;
-      setTimeout(() => {
-        window.location.href = activeUpiUri;
-      }, 500);
-    }
-
     function initProfiles() {
       let profiles = JSON.parse(localStorage.getItem('cm_profiles') || '[]');
       if (profiles.length === 0) {
@@ -1138,6 +1155,7 @@
 
     function renderProfileDropdown(profiles) {
       const dropdown = document.getElementById('profileDropdown');
+      if (!dropdown) return;
       dropdown.innerHTML = profiles.map(p => `<option value="${p.id}">${p.name} - ${p.agent}</option>`).join('');
     }
 
@@ -1157,7 +1175,9 @@
     }
 
     function loadSelectedProfile() {
-      const id = document.getElementById('profileDropdown').value;
+      const dropdown = document.getElementById('profileDropdown');
+      if (!dropdown) return;
+      const id = dropdown.value;
       const profiles = JSON.parse(localStorage.getItem('cm_profiles') || '[]');
       const found = profiles.find(p => p.id === id);
       if (found) {
@@ -1168,7 +1188,9 @@
     }
 
     function deleteProfile() {
-      const id = document.getElementById('profileDropdown').value;
+      const dropdown = document.getElementById('profileDropdown');
+      if (!dropdown) return;
+      const id = dropdown.value;
       let profiles = JSON.parse(localStorage.getItem('cm_profiles') || '[]');
       if (profiles.length <= 1) return alert('Keep at least 1 profile');
       profiles = profiles.filter(p => p.id !== id);
@@ -1177,7 +1199,6 @@
       loadSelectedProfile();
     }
 
-    // STRICT LAST 10 TRANSACTIONS
     function saveHistoryItem(item) {
       let history = JSON.parse(localStorage.getItem('cm_history') || '[]');
       history.unshift(item);
@@ -1188,6 +1209,7 @@
 
     function renderHistory() {
       const list = document.getElementById('historyList');
+      if (!list) return;
       const history = JSON.parse(localStorage.getItem('cm_history') || '[]');
       if (!history.length) {
         list.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No recent transactions saved</p>`;
