@@ -147,6 +147,21 @@
 </head>
 <body class="antialiased min-h-screen relative pb-16">
 
+  <!-- ========================================================== -->
+  <!-- NATIVE APP SPLASH SCREEN (FLIPKART STYLE LOADING)           -->
+  <!-- ========================================================== -->
+  <div id="splashScreen" class="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center transition-opacity duration-700">
+    <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-2xl shadow-blue-500/40 text-white animate-bounce">
+      <i data-lucide="shield-check" class="w-12 h-12"></i>
+    </div>
+    <h2 class="text-2xl font-black text-slate-900 tracking-tight mt-5">COLLECT MASTER</h2>
+    <p class="text-xs font-extrabold text-blue-600 uppercase tracking-widest mt-1">Elite Payment Gateway</p>
+    
+    <div class="absolute bottom-12 flex items-center gap-2.5 text-slate-400 text-xs font-semibold">
+      <span class="w-2.5 h-2.5 rounded-full bg-blue-600 animate-ping"></span> Loading Secure Gateway...
+    </div>
+  </div>
+
   <!-- Ambient Glow Background -->
   <div class="ambient-mesh">
     <div class="orb-1"></div>
@@ -268,7 +283,7 @@
                 <button type="button" onclick="document.getElementById('logoFileInput').click()" class="px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition active:scale-95 shadow-xs flex items-center gap-1.5">
                   <i data-lucide="upload" class="w-3.5 h-3.5 text-blue-600"></i> Upload Logo
                 </button>
-                <button type="button" onclick="removeLogo()" class="px-2.5 py-1.5 text-rose-600 hover:bg-rose-50 text-xs font-bold rounded-xl transition">
+                <button type="button" onclick="removeLogo()" class="px-2.5 py-1.5 text-rose-600 bg-rose-50 text-xs font-bold rounded-xl transition">
                   Remove
                 </button>
               </div>
@@ -763,6 +778,17 @@
       element: document.getElementById('histQrCanvas'),
       size: 320,
       level: 'H'
+    });
+
+    // Hide Splash Screen after app loads
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        if (splash) {
+          splash.style.opacity = '0';
+          setTimeout(() => splash.remove(), 700);
+        }
+      }, 1000);
     });
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1393,8 +1419,12 @@
 
     function renderHistory() {
       const list = document.getElementById('historyList');
-      if (!list) return;
+      const countEl = document.getElementById('metricHistoryCount');
       const history = JSON.parse(localStorage.getItem('cm_history') || '[]');
+      
+      if (countEl) countEl.textContent = history.length;
+      if (!list) return;
+
       if (!history.length) {
         list.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">No recent transactions saved</p>`;
         return;
